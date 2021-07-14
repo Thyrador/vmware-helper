@@ -1,6 +1,14 @@
 #!/bin/bash
 
-VMWVC=$(vmware -v | cut -d' ' -f 3)
+VMWAREBIN=vmware
+
+if ! command -v $VMWAREBIN &> /dev/null
+then
+    echo "Command $VMWAREBIN could not be found. Exiting."
+    exit
+fi
+
+VMWVC=$($VMWAREBIN -v | cut -d' ' -f 3)
 VMWARE_VERSION=workstation-$VMWVC
 VMWARE_KVERSION=w$VMWVC-k$(uname -r | cut -d'-' -f 1 | head -c 4)
 
@@ -57,9 +65,9 @@ Clean
 mkdir -p $TMP_FOLDER
 cd $TMP_FOLDER
 
-if [ $1 = "-h" ]; then
+if [ "$1" = "-h" ]; then
     Help
-elif [ $1 = "-k" ] || [ $1 = "k" ] || [ $1 = "-K" ] || [ $1 = "K" ] || [ $1 = "-kernel" ] || [ $1 = "kernel" ] ]; then
+elif [ "$1" = "-k" ] || [ "$1" = "k" ] || [ "$1" = "-K" ] || [ "$1" = "K" ] || [ "$1" = "-kernel" ] || [ "$1" = "kernel" ] ; then
     echo
     echo "Downloading '$VMWARE_KVERSION' modules"
     echo
