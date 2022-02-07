@@ -20,6 +20,19 @@ GITHUB_MODULES_RELEASE_PAGE=$GITHUB_HOST_MODULES/archive/refs/tags
 TMP_FOLDER=/tmp/patch-vmware
 
 ################################################################################
+# this function is called when Ctrl-C is sent                                  #
+################################################################################
+function trap_ctrlc ()
+{
+    Clean
+    exit 2
+}
+
+# initialise trap to call trap_ctrlc function
+# when signal 2 (SIGINT) is received
+trap "trap_ctrlc" 2
+
+################################################################################
 # Help                                                                         #
 ################################################################################
 Help()
@@ -42,6 +55,7 @@ Help()
 
 Build()
 {
+    read -p "Modules downloaded. If you want, you can modify them under '$TMP_FOLDER' or press enter to continue ..."
     echo
     echo "Attempt to install vmware-host-modules for $VMWARE_VERSION"
     echo
@@ -50,15 +64,19 @@ Build()
     sudo rm /usr/lib/vmware/lib/libz.so.1/libz.so.1
     sudo ln -s /lib/x86_64-linux-gnu/libz.so.1 /usr/lib/vmware/lib/libz.so.1/libz.so.1
     sudo /etc/init.d/vmware restart
-    echo
-    echo "Clean up '$TMP_FOLDER' ..."
-    echo
     Clean
 }
 
 Clean()
 {
-    rm -fdr $TMP_FOLDER
+    if [ -d "$TMP_FOLDER" ]; then
+        echo
+        echo
+        echo "Purge '$TMP_FOLDER' ..."
+        rm -fdr $TMP_FOLDER
+        echo "Done ..."
+        echo
+    fi
 }
 
 Clean
